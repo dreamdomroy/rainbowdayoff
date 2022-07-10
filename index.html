@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <style>
+        @font-face {
+            font-family: SweiToothpasteCJKtc-Regular;
+            src: url(https://cdn.jsdelivr.net/gh/max32002/swei-toothpaste@2.0/WebFont/CJK%20TC/SweiToothpasteCJKtc-Regular.woff2) format("woff2")
+            , url(https://cdn.jsdelivr.net/gh/max32002/swei-toothpaste@2.0/WebFont/CJK%20TC/SweiToothpasteCJKtc-Regular.woff) format("woff");
+        }
+    </style>
+    <title>疫情停課公告產生器</title>
+</head>
+<body style="font-family:SweiToothpasteCJKtc-Regular,garamond,serif;background-color: rgb(197, 197, 197)">
+    <form>
+        <!-- [img]https://i.imgur.com/Pv2v7Z0.png[/img] -->
+        資料填寫：<br>
+        <img id="底圖" style="display:none" src="https://i.imgur.com/PW2bdl8.png" crossorigin="anonymous"/>
+        <input type="text" class="input" id="日期" placeholder="公告日期"/><br>
+        <input type="text" class="input" id="停課日期" placeholder="確診日期"/><br>
+        <input type="text" class="input" id="復課日期" placeholder="復課日期"/><br>
+        <input type="text" class="input" id="班別" placeholder="班別"/><br>
+        <input type="text" class="input" id="類型" placeholder="類型" value="確診"/><br><br>
+        公告內容(依照內容自動生成)：<br>
+        <textarea type="text" class="input" id="內容" rows="8" cols="50" placeholder="公告內容"></textarea>
+        <!-- <button type="submit">Save</button> -->
+    </form>
+    <br>
+    對圖片點擊右鍵➡另存圖片，即可儲存公告：
+    <br>
+    <canvas id="canvas"/>
+    <script type="text/javascript">
+        function getweekday(datetochange){
+            date = '2022/'+datetochange
+            const d = new Date(date);
+            let day = d.getDay()
+            chineseList = ['日','一','二','三','四','五','六']
+            return datetochange + '('+chineseList[day]+')'
+        }
+
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+            var cars = text.split("\n");
+            console.log(cars)
+            for (var ii = 0; ii < cars.length; ii++) {
+
+                var line = "";
+                var words = cars[ii].split(" ");
+
+                for (var n = 0; n < words.length; n++) {
+                    var testLine = line + words[n] + " ";
+                    var metrics = context.measureText(testLine);
+                    var testWidth = metrics.width;
+
+                    if (testWidth > maxWidth) {
+                        context.fillText(line, x, y);
+                        line = words[n] + " ";
+                        y += lineHeight;
+                    }
+                    else {
+                        line = testLine;
+                    }
+                }
+                context.fillText(line, x, y);
+                y += lineHeight;
+            }
+        }
+
+        function resizeImage(width, height){
+            var image = document.getElementById('resizeImage'),
+            canvas = document.createElement('canvas'),
+            ctx = canvas.getContext('2d');
+            ctx.canvas.height = height;//pass height
+            ctx.canvas.width = width;//pass width
+            ctx.drawImage(image,cropLeft, cropTop, cropWidth, cropHeight,10,10,width,height);
+            return canvas;
+        };
+
+        var canvas = document.getElementById('canvas');
+        ctx = canvas.getContext('2d');
+        canvas.width = $('img').width();
+        canvas.crossOrigin = "Anonymous";
+        canvas.height = $('img').height();
+        ctx.drawImage($('img').get(0), 0, 0);
+        
+        $(document).on('input','.input',function(){
+            mainContent = '親愛的家長您好：\n\n本校 '+ $('#班別').val() +' 一名學生快篩陽性，\n該班自 '+ getweekday($('#停課日期').val()) +' 停課三日，\n'+ getweekday($('#復課日期').val()) +' 當日於官方Line回報快篩陰性即可復課。\n校園防疫訊息，將隨時依教育局規範修正，\n請家長留意學校公告！'
+            $('#內容').val(mainContent)
+
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.drawImage($('img').get(0), 0, 0);
+            
+            ctx.font = "bold 36pt SweiToothpasteCJKtc-Regular";
+            ctx.fillStyle = "white";
+            if ($('#日期').val().length <= 3){
+                ctx.fillText($('#日期').val(),130,210);
+            }
+            else if ($('#日期').val().length == 4){
+                ctx.fillText($('#日期').val(),120,210);
+            }
+            else{
+                ctx.font = "bold 34pt SweiToothpasteCJKtc-Regular";
+                ctx.fillText($('#日期').val(),110,210);
+            }
+            ctx.font = "bold 36pt SweiToothpasteCJKtc-Regular";
+            ctx.fillStyle = "white";
+            ctx.fillText($('#班別').val(),330,210);
+            ctx.fillText($('#類型').val(),590,210);
+
+            ctx.fillStyle = "black";
+            ctx.font = "20pt SweiToothpasteCJKtc-Regular";
+            wrapText(ctx, $('#內容').val(),60 ,340, canvas.width, 30 )
+            // ctx.fillText(data,100,310);
+        });
+    </script>
+</body>
+</html>
