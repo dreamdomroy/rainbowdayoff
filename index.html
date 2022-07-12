@@ -11,7 +11,7 @@
             , url(https://cdn.jsdelivr.net/gh/max32002/swei-toothpaste@2.0/WebFont/CJK%20TC/SweiToothpasteCJKtc-Regular.woff) format("woff");
         }
     </style>
-    <title>文藻美語停課公告產生器</title>
+    <title>疫情停課公告產生器</title>
 </head>
 <body style="font-family:SweiToothpasteCJKtc-Regular,garamond,serif;background-color: rgb(197, 197, 197)">
     <form>
@@ -24,12 +24,12 @@
         <input type="text" class="input" id="班別" placeholder="班別"/><br>
         <input type="text" class="input" id="類型" placeholder="類型" value="確診"/><br><br>
         公告內容(依照內容自動生成)：<br>
-        <textarea type="text" class="input" id="內容" rows="8" cols="50" placeholder="公告內容"></textarea>
+        <textarea type="text" class="textarea" id="內容" rows="8" cols="50" placeholder="公告內容"></textarea>
         <!-- <button type="submit">Save</button> -->
     </form>
     <br>
-    對圖片點擊右鍵➡另存圖片，即可儲存公告：
-    <br>
+    <button id="btndownload">下載公告PNG檔</button>
+    <br><br>
     <canvas id="canvas"/>
     <script type="text/javascript">
         function getweekday(datetochange){
@@ -77,42 +77,101 @@
             return canvas;
         };
 
-        var canvas = document.getElementById('canvas');
-        ctx = canvas.getContext('2d');
-        canvas.width = $('img').width();
-        canvas.crossOrigin = "Anonymous";
-        canvas.height = $('img').height();
-        ctx.drawImage($('img').get(0), 0, 0);
-        
-        $(document).on('input','.input',function(){
-            mainContent = '親愛的家長您好：\n\n本校 '+ $('#班別').val() +' 一名學生快篩陽性，\n該班自 '+ getweekday($('#停課日期').val()) +' 停課三日，\n'+ getweekday($('#復課日期').val()) +' 當日於官方Line回報快篩陰性即可復課。\n校園防疫訊息，將隨時依教育局規範修正，\n請家長留意學校公告！'
-            $('#內容').val(mainContent)
+        function download(canvas, filename) {
+            /// create an "off-screen" anchor tag
+            var lnk = document.createElement('a'), e;
 
-            ctx.clearRect(0,0,canvas.width,canvas.height);
+            /// the key here is to set the download attribute of the a tag
+            lnk.download = filename;
+
+            /// convert canvas content to data-uri for link. When download
+            /// attribute is set the content pointed to by link will be
+            /// pushed as "download" in HTML5 capable browsers
+            lnk.href = canvas.toDataURL("image/png;base64");
+
+            /// create a "fake" click-event to trigger the download
+            if (document.createEvent) {
+                e = document.createEvent("MouseEvents");
+                e.initMouseEvent("click", true, true, window,
+                                0, 0, 0, 0, 0, false, false, false,
+                                false, 0, null);
+
+                lnk.dispatchEvent(e);
+            } else if (lnk.fireEvent) {
+                lnk.fireEvent("onclick");
+            }
+        }
+
+        window.onload = function(){
+            var dwn = document.getElementById('btndownload');
+            var canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = $('img').width();
+            canvas.crossOrigin = "Anonymous";
+            canvas.height = $('img').height();
             ctx.drawImage($('img').get(0), 0, 0);
             
-            ctx.font = "bold 36pt SweiToothpasteCJKtc-Regular";
-            ctx.fillStyle = "white";
-            if ($('#日期').val().length <= 3){
-                ctx.fillText($('#日期').val(),130,210);
-            }
-            else if ($('#日期').val().length == 4){
-                ctx.fillText($('#日期').val(),120,210);
-            }
-            else{
-                ctx.font = "bold 34pt SweiToothpasteCJKtc-Regular";
-                ctx.fillText($('#日期').val(),110,210);
-            }
-            ctx.font = "bold 36pt SweiToothpasteCJKtc-Regular";
-            ctx.fillStyle = "white";
-            ctx.fillText($('#班別').val(),330,210);
-            ctx.fillText($('#類型').val(),590,210);
+            $('#內容').bind('input propertychange', function() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.drawImage($('img').get(0), 0, 0);
+                
+                ctx.font = "bold 36pt SweiToothpasteCJKtc-Regular";
+                ctx.fillStyle = "white";
+                if ($('#日期').val().length <= 3){
+                    ctx.fillText($('#日期').val(),130,210);
+                }
+                else if ($('#日期').val().length == 4){
+                    ctx.fillText($('#日期').val(),120,210);
+                }
+                else{
+                    ctx.font = "bold 34pt SweiToothpasteCJKtc-Regular";
+                    ctx.fillText($('#日期').val(),110,210);
+                }
+                ctx.font = "bold 36pt SweiToothpasteCJKtc-Regular";
+                ctx.fillStyle = "white";
+                ctx.fillText($('#班別').val(),360,210);
+                ctx.fillText($('#類型').val(),590,210);
 
-            ctx.fillStyle = "black";
-            ctx.font = "20pt SweiToothpasteCJKtc-Regular";
-            wrapText(ctx, $('#內容').val(),60 ,340, canvas.width, 30 )
-            // ctx.fillText(data,100,310);
-        });
+                ctx.fillStyle = "black";
+                ctx.font = "20pt SweiToothpasteCJKtc-Regular";
+                wrapText(ctx, $('#內容').val(),60 ,340, canvas.width, 30 )
+            });
+
+            $(document).on('input','.input',function(){
+                mainContent = '親愛的家長您好：\n\n本校 '+ $('#班別').val() +' 一名學生快篩陽性，\n該班自 '+ getweekday($('#停課日期').val()) +' 停課三日，\n'+ getweekday($('#復課日期').val()) +' 當日於官方Line回報快篩陰性即可復課。\n校園防疫訊息，將隨時依教育局規範修正，\n請家長留意學校公告！'
+                //mainContent = '7/12(二)凌晨本班 R3 一名學生快篩陽性， \n與同學最後接觸日為7/11(一)，\n該班7/13(三)及7/14(四)停課\n7/15(五)復課當日請於官方LINE回報快篩陰性即可復課。\n\n美語課，線上同步上課\n別忘了準時上線！'
+                $('#內容').val(mainContent)
+
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.drawImage($('img').get(0), 0, 0);
+                
+                ctx.font = "bold 36pt SweiToothpasteCJKtc-Regular";
+                ctx.fillStyle = "white";
+                if ($('#日期').val().length <= 3){
+                    ctx.fillText($('#日期').val(),130,210);
+                }
+                else if ($('#日期').val().length == 4){
+                    ctx.fillText($('#日期').val(),120,210);
+                }
+                else{
+                    ctx.font = "bold 34pt SweiToothpasteCJKtc-Regular";
+                    ctx.fillText($('#日期').val(),110,210);
+                }
+                ctx.font = "bold 36pt SweiToothpasteCJKtc-Regular";
+                ctx.fillStyle = "white";
+                ctx.fillText($('#班別').val(),360,210);
+                ctx.fillText($('#類型').val(),590,210);
+
+                ctx.fillStyle = "black";
+                ctx.font = "20pt SweiToothpasteCJKtc-Regular";
+                wrapText(ctx, $('#內容').val(),60 ,340, canvas.width, 30 )
+                // ctx.fillText(data,100,310);
+            });
+            dwn.onclick = function(){
+            download(canvas, 'myimage.png');
+        }
+
+        }
     </script>
 </body>
 </html>
