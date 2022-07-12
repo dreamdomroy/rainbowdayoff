@@ -28,9 +28,10 @@
         <!-- <button type="submit">Save</button> -->
     </form>
     <br>
-    <button id="btndownload">下載公告PNG檔</button>
+    <img id="result" src=""/>
+    <!-- <button id="btndownload">下載公告PNG檔</button> -->
     <br><br>
-    <canvas id="canvas"/>
+    <canvas id="canvas" hidden/>
     <script type="text/javascript">
         function getweekday(datetochange){
             date = '2022/'+datetochange
@@ -135,6 +136,8 @@
                 ctx.fillStyle = "black";
                 ctx.font = "20pt SweiToothpasteCJKtc-Regular";
                 wrapText(ctx, $('#內容').val(),60 ,340, canvas.width, 30 )
+                var image = canvas.toDataURL("image/png");
+                $('#result').attr('src', image)
             });
 
             $(document).on('input','.input',function(){
@@ -166,11 +169,12 @@
                 ctx.font = "20pt SweiToothpasteCJKtc-Regular";
                 wrapText(ctx, $('#內容').val(),60 ,340, canvas.width, 30 )
                 // ctx.fillText(data,100,310);
+                var image = canvas.toDataURL("image/png");
+                $('#result').attr('src', image)
             });
             dwn.onclick = function(){
-            download(canvas, 'myimage.png');
-        }
-
+                download(canvas, 'myimage.png');
+            }
         }
     </script>
 </body>
