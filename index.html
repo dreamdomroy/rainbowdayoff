@@ -11,11 +11,12 @@
             , url(https://cdn.jsdelivr.net/gh/max32002/swei-toothpaste@2.0/WebFont/CJK%20TC/SweiToothpasteCJKtc-Regular.woff) format("woff");
         }
     </style>
-    <title>安親校公告產生器</title>
+    <title>疫情停課公告產生器</title>
 </head>
 <body style="font-family:SweiToothpasteCJKtc-Regular,garamond,serif;background-color: rgb(197, 197, 197)">
     <form>
-        <!-- [img]https://i.imgur.com/Pv2v7Z0.png[/img] -->
+        <!-- 安親[img]https://i.imgur.com/IHhe1uI.png[/img] -->
+        <!-- 幼兒[img]https://i.imgur.com/upLWOc1.png[/img] -->
         資料填寫：<br>
         <img id="底圖" style="display:none" src="https://i.imgur.com/IHhe1uI.png" crossorigin="anonymous"/>
         <input type="text" class="input" id="日期" placeholder="公告日期"/><br>
@@ -119,23 +120,23 @@
                 ctx.font = "bold 36pt SweiToothpasteCJKtc-Regular";
                 ctx.fillStyle = "white";
                 if ($('#日期').val().length <= 3){
-                    ctx.fillText($('#日期').val(),130,210);
+                    ctx.fillText($('#日期').val(),130,195);
                 }
                 else if ($('#日期').val().length == 4){
-                    ctx.fillText($('#日期').val(),120,210);
+                    ctx.fillText($('#日期').val(),120,195);
                 }
                 else{
                     ctx.font = "bold 34pt SweiToothpasteCJKtc-Regular";
-                    ctx.fillText($('#日期').val(),110,210);
+                    ctx.fillText($('#日期').val(),110,195);
                 }
                 ctx.font = "bold 36pt SweiToothpasteCJKtc-Regular";
                 ctx.fillStyle = "white";
-                ctx.fillText($('#班別').val(),360,210);
-                ctx.fillText($('#類型').val(),590,210);
+                ctx.fillText($('#班別').val(),360,195);
+                ctx.fillText($('#類型').val(),590,195);
 
                 ctx.fillStyle = "black";
                 ctx.font = "20pt SweiToothpasteCJKtc-Regular";
-                wrapText(ctx, $('#內容').val(),60 ,340, canvas.width, 30 )
+                wrapText(ctx, $('#內容').val(),60 ,320, canvas.width, 30 )
                 var image = canvas.toDataURL("image/png");
                 $('#result').attr('src', image)
             });
@@ -151,23 +152,23 @@
                 ctx.font = "bold 36pt SweiToothpasteCJKtc-Regular";
                 ctx.fillStyle = "white";
                 if ($('#日期').val().length <= 3){
-                    ctx.fillText($('#日期').val(),130,210);
+                    ctx.fillText($('#日期').val(),130,195);
                 }
                 else if ($('#日期').val().length == 4){
-                    ctx.fillText($('#日期').val(),120,210);
+                    ctx.fillText($('#日期').val(),120,195);
                 }
                 else{
                     ctx.font = "bold 34pt SweiToothpasteCJKtc-Regular";
-                    ctx.fillText($('#日期').val(),110,210);
+                    ctx.fillText($('#日期').val(),110,195);
                 }
                 ctx.font = "bold 36pt SweiToothpasteCJKtc-Regular";
                 ctx.fillStyle = "white";
-                ctx.fillText($('#班別').val(),360,210);
-                ctx.fillText($('#類型').val(),590,210);
+                ctx.fillText($('#班別').val(),360,195);
+                ctx.fillText($('#類型').val(),590,195);
 
                 ctx.fillStyle = "black";
                 ctx.font = "20pt SweiToothpasteCJKtc-Regular";
-                wrapText(ctx, $('#內容').val(),60 ,340, canvas.width, 30 )
+                wrapText(ctx, $('#內容').val(),60 ,320, canvas.width, 30 )
                 // ctx.fillText(data,100,310);
                 var image = canvas.toDataURL("image/png");
                 $('#result').attr('src', image)
